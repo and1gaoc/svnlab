@@ -7,7 +7,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from .api import router
-from .cache import SourceCache
+from .cache import RepositoryCache
 from .config import DEFAULT_SETTINGS, Settings
 from .errors import SvnLabError
 from .svn_client import SvnClient
@@ -19,7 +19,7 @@ def create_app(
     *,
     settings: Settings = DEFAULT_SETTINGS,
     svn_client: SvnClient | None = None,
-    source_cache: SourceCache | None = None,
+    repository_cache: RepositoryCache | None = None,
 ) -> FastAPI:
     app = FastAPI(
         title="SVNLab",
@@ -28,10 +28,8 @@ def create_app(
         openapi_url="/api/openapi.json",
     )
     app.state.svn_client = svn_client or SvnClient(settings)
-    app.state.source_cache = source_cache or SourceCache(
-        ttl_seconds=settings.cache_ttl_seconds,
-        max_entries=settings.cache_max_entries,
-        max_bytes=settings.cache_max_bytes,
+    app.state.repository_cache = repository_cache or RepositoryCache(
+        settings.cache_path
     )
 
     @app.exception_handler(SvnLabError)

@@ -39,6 +39,7 @@ class RepositoryRequest(ApiModel):
 class CommitListRequest(RepositoryRequest):
     limit: int = Field(default=30, ge=1, le=100)
     before_revision: int | None = Field(default=None, ge=1)
+    refresh: bool = False
 
 
 class FileContentRequest(RepositoryRequest):

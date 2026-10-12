@@ -270,7 +270,7 @@ a { color: inherit; }
   display: grid;
   grid-template-columns: 42px minmax(0,1fr) auto;
   gap: 13px;
-  align-items: center;
+  align-items: start;
   min-height: 79px;
   padding: 13px 16px;
   border-bottom: 1px solid var(--line-soft);
@@ -281,12 +281,13 @@ a { color: inherit; }
 .commit-row:hover .commit-message { color: var(--violet-dark); }
 .author-avatar { width: 36px; height: 36px; display: grid; place-items: center; color: #503b89; background: #e9e4f5; border-radius: 50%; font: 700 13px var(--display-font); }
 .commit-copy { min-width: 0; }
-.commit-message { overflow: hidden; color: #2e2933; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; transition: color .15s ease; }
+.commit-message { display: block; overflow: hidden; color: #2e2933; font-weight: 650; line-height: 1.45; overflow-wrap: anywhere; white-space: pre-wrap; transition: color .15s ease; }
 .commit-meta { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 5px; color: var(--muted); font-size: 11px; }
 .commit-meta span + span::before { content: "·"; margin-right: 7px; color: #b0acb5; }
 .commit-tail { display: flex; align-items: center; gap: 8px; }
 .file-count { color: var(--muted); font-size: 11px; }
 .revision-chip { padding: 4px 7px; color: #4a4650; border: 1px solid #d9d7dd; border-radius: 5px; background: #f3f2f5; font: 650 11px var(--code-font); }
+.cache-chip { padding: 4px 7px; color: #28754d; border: 1px solid #b8dfcb; border-radius: 999px; background: #eaf7f0; font: 650 10px var(--display-font); }
 .pagination { display: flex; justify-content: center; gap: 9px; margin-top: 18px; }
 
 .empty-state { padding: 65px 25px; text-align: center; }

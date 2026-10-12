@@ -1,8 +1,17 @@
 import pytest
 
+from svnlab.config import Settings
 from svnlab.errors import SvnAuthenticationError, SvnCertificateError, SvnNotFoundError
 from svnlab.models import RepositoryConnection
 from svnlab.svn_client import SvnClient
+
+
+def test_remote_operation_timeouts_allow_slow_repositories() -> None:
+    settings = Settings()
+    assert settings.info_timeout_seconds == 60
+    assert settings.log_timeout_seconds == 180
+    assert settings.content_timeout_seconds == 300
+    assert settings.diff_timeout_seconds == 600
 
 
 def test_auth_arguments_disable_cache() -> None:

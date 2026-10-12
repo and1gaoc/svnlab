@@ -11,7 +11,10 @@ foreach ($target in @($buildPath, $distPath)) {
         throw "Refusing to clean a path outside the project: $absoluteTarget"
     }
     if (Test-Path -LiteralPath $absoluteTarget) {
-        Remove-Item -LiteralPath $absoluteTarget -Recurse -Force
+        Get-ChildItem -LiteralPath $absoluteTarget -Force |
+            Remove-Item -Recurse -Force
+    } else {
+        New-Item -ItemType Directory -Path $absoluteTarget | Out-Null
     }
 }
 

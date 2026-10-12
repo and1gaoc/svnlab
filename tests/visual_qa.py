@@ -29,7 +29,7 @@ COMMITS = {
             "revision": 1842,
             "author": "liwei",
             "date": "2026-10-12T08:42:00Z",
-            "message": "修复库存同步时的重复写入",
+            "message": "修复库存同步时的重复写入\n补充库存幂等校验\n调整重试任务顺序\n记录异常仓库编号\n第五行不应出现在列表",
             "changed_paths": [],
             "changed_file_count": 4,
         },
@@ -51,6 +51,7 @@ COMMITS = {
         },
     ],
     "next_before": None,
+    "cache_hit": True,
 }
 
 DETAIL = {
@@ -231,6 +232,13 @@ async def main() -> None:
         await desktop_page.get_by_role("button", name="测试连接并进入").click()
         await desktop_page.get_by_role("heading", name="提交记录").wait_for()
         assert await desktop_page.locator(".commit-row").count() == 3
+        expected_preview = "修复库存同步时的重复写入\n补充库存幂等校验\n调整重试任务顺序\n记录异常仓库编号"
+        first_message = desktop_page.locator(".commit-message").first
+        assert await first_message.inner_text() == expected_preview
+        assert "第五行不应出现在列表" in await first_message.get_attribute("title")
+        assert await desktop_page.get_by_text("本地缓存").count() == 1
+        await desktop_page.get_by_role("button", name="刷新远程").click()
+        await desktop_page.get_by_text("已从 SVN 更新最新提交").wait_for()
         await assert_viewport(desktop_page)
         await desktop_page.screenshot(path=ARTIFACTS / "commits-desktop.png", full_page=True)
 

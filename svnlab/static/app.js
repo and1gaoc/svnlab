@@ -13,6 +13,7 @@
     connection: loadConnection(),
     routeEpoch: 0,
     commits: [],
+    commitCacheHit: false,
     nextBefore: null,
     cursor: null,
     cursorHistory: [],
@@ -259,6 +260,7 @@
       if (epoch !== state.routeEpoch) return;
       state.commits = result.commits;
       state.nextBefore = result.next_before;
+      state.commitCacheHit = Boolean(result.cache_hit);
       drawCommitList();
     } catch (error) {
       if (epoch !== state.routeEpoch) return;
@@ -274,8 +276,9 @@
       el("p", "page-subtitle", state.connection.repository),
     );
     const actions = el("div", "header-actions");
-    const refresh = button("刷新");
-    refresh.addEventListener("click", () => route());
+    if (state.commitCacheHit) actions.append(el("span", "cache-chip", "本地缓存"));
+    const refresh = button("刷新远程");
+    refresh.addEventListener("click", () => refreshCommits(refresh));
     actions.append(refresh);
     header.append(headingCopy, actions);
 
@@ -311,8 +314,10 @@
     row.href = `#/commits/${commit.revision}`;
     const avatar = el("span", "author-avatar", initials(commit.author));
     const copy = el("span", "commit-copy");
-    const firstLine = (commit.message || "无提交说明").split(/\r?\n/, 1)[0];
-    const message = el("span", "commit-message", firstLine);
+    const fullMessage = commit.message || "无提交说明";
+    const preview = fullMessage.split(/\r?\n/).slice(0, 4).join("\n");
+    const message = el("span", "commit-message", preview);
+    message.title = fullMessage;
     const meta = el("span", "commit-meta");
     meta.append(el("span", null, commit.author || "未知作者"), el("span", null, formatDate(commit.date)));
     copy.append(message, meta);
@@ -320,6 +325,30 @@
     tail.append(el("span", "file-count", `${commit.changed_file_count} 个文件`), el("span", "revision-chip", `r${commit.revision}`));
     row.append(avatar, copy, tail);
     return row;
+  }
+
+  async function refreshCommits(control) {
+    control.disabled = true;
+    control.textContent = "正在刷新…";
+    try {
+      const result = await post("/api/commits", {
+        connection: state.connection,
+        limit: 30,
+        before_revision: null,
+        refresh: true,
+      });
+      state.cursor = null;
+      state.cursorHistory = [];
+      state.commits = result.commits;
+      state.nextBefore = result.next_before;
+      state.commitCacheHit = false;
+      drawCommitList();
+      toast("已从 SVN 更新最新提交");
+    } catch (error) {
+      control.disabled = false;
+      control.textContent = "刷新远程";
+      toast(error.message, "error");
+    }
   }
 
   function initials(author) {

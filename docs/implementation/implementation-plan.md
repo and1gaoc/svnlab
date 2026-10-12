@@ -303,7 +303,7 @@ Produce a self-contained single-file Windows executable that embeds SVNLab's Pyt
 
 ### TASK-008 Add persistent caching and resilient commit browsing
 
-Status: ready
+Status: awaiting_review
 Depends on: TASK-007
 
 #### Goal

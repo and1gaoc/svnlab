@@ -1,5 +1,5 @@
 schema_version: 1
-phase: IMPLEMENTATION
+phase: TASK_REVIEW
 plan_status: approved
 approval_note: "User pre-authorized recommended intermediate choices and requested final-result-only review."
 current_task: TASK-008
@@ -36,6 +36,6 @@ tasks:
     depends_on:
       - TASK-006
   TASK-008:
-    status: ready
+    status: awaiting_review
     depends_on:
       - TASK-007
