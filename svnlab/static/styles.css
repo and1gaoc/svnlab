@@ -331,9 +331,9 @@ a { color: inherit; }
 .review-layout { display: grid; grid-template-columns: 218px minmax(0,1fr); gap: 18px; align-items: start; }
 .file-rail { position: sticky; top: 70px; max-height: calc(100vh - 90px); overflow: auto; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); }
 .file-rail-head { position: sticky; top: 0; z-index: 2; padding: 11px 12px; border-bottom: 1px solid var(--line); background: #f6f5f8; font: 650 11px var(--display-font); letter-spacing: .03em; }
-.file-rail a { display: grid; grid-template-columns: 18px minmax(0,1fr); gap: 6px; padding: 8px 10px; color: #4d4853; border-bottom: 1px solid var(--line-soft); text-decoration: none; font: 10.5px/1.35 var(--code-font); }
-.file-rail a:last-child { border: 0; }
-.file-rail a:hover { color: var(--violet-dark); background: var(--violet-soft); }
+.file-rail-link { width: 100%; display: grid; grid-template-columns: 18px minmax(0,1fr); gap: 6px; padding: 8px 10px; color: #4d4853; border: 0; border-bottom: 1px solid var(--line-soft); background: transparent; text-align: left; cursor: pointer; font: 10.5px/1.35 var(--code-font); }
+.file-rail-link:last-child { border-bottom: 0; }
+.file-rail-link:hover { color: var(--violet-dark); background: var(--violet-soft); }
 .file-status { width: 17px; height: 17px; display: grid; place-items: center; border-radius: 4px; font: 750 9px var(--code-font); }
 .status-added { color: var(--green); background: var(--green-soft); }
 .status-deleted { color: var(--red); background: var(--red-soft); }

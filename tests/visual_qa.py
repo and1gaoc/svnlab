@@ -242,6 +242,12 @@ async def main() -> None:
         await assert_viewport(desktop_page)
         await desktop_page.screenshot(path=ARTIFACTS / "diff-desktop.png", full_page=False)
 
+        detail_hash = await desktop_page.evaluate("location.hash")
+        await desktop_page.locator(".file-rail-link").nth(1).click()
+        await desktop_page.wait_for_function("window.scrollY > 0")
+        assert await desktop_page.evaluate("location.hash") == detail_hash
+        assert await desktop_page.get_by_role("heading", name="提交记录").count() == 0
+
         await desktop_page.get_by_role("button", name="单栏").click()
         assert await desktop_page.locator(".mode-switch .active").inner_text() == "单栏"
         await desktop_page.get_by_role("button", name="并排").click()

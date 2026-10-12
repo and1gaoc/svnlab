@@ -382,8 +382,14 @@
     const stack = el("div", "diff-stack");
 
     state.detail.diffs.forEach((file, index) => {
-      const link = el("a");
-      link.href = `#diff-file-${index}`;
+      const link = button("", "file-rail-link");
+      link.setAttribute("aria-label", `跳转到 ${file.path}`);
+      link.addEventListener("click", () => {
+        document.querySelector(`#diff-file-${index}`)?.scrollIntoView({
+          behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+          block: "start",
+        });
+      });
       const badge = statusBadge(file.status);
       const path = el("span", "file-rail-path", file.path);
       path.title = file.path;
