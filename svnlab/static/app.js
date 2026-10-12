@@ -20,6 +20,7 @@
     diffMode: localStorage.getItem(MODE_KEY) || (matchMedia("(max-width: 740px)").matches ? "unified" : "split"),
     fileViews: new Map(),
     contexts: new Map(),
+    collapsedFolders: new Set(),
   };
 
   class ApiError extends Error {
@@ -381,20 +382,8 @@
     fileRail.append(el("div", "file-rail-head", `本次变更 · ${state.detail.diffs.length}`));
     const stack = el("div", "diff-stack");
 
+    fileRail.append(renderFileTree(state.detail.diffs));
     state.detail.diffs.forEach((file, index) => {
-      const link = button("", "file-rail-link");
-      link.setAttribute("aria-label", `跳转到 ${file.path}`);
-      link.addEventListener("click", () => {
-        document.querySelector(`#diff-file-${index}`)?.scrollIntoView({
-          behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
-          block: "start",
-        });
-      });
-      const badge = statusBadge(file.status);
-      const path = el("span", "file-rail-path", file.path);
-      path.title = file.path;
-      link.append(badge, path);
-      fileRail.append(link);
       stack.append(renderDiffFile(file, index));
     });
 
@@ -415,6 +404,94 @@
       layout,
     ));
     if (preserveScroll) requestAnimationFrame(() => window.scrollTo(0, oldScroll));
+  }
+
+  function renderFileTree(files) {
+    const root = buildFileTree(files);
+    const tree = el("div", "file-tree");
+    tree.setAttribute("role", "tree");
+    appendTreeChildren(tree, root, 0);
+    return tree;
+  }
+
+  function buildFileTree(files) {
+    const root = { name: "", path: "", directories: new Map(), files: [] };
+    files.forEach((file, index) => {
+      const parts = file.path.replaceAll("\\", "/").split("/").filter(Boolean);
+      let current = root;
+      parts.slice(0, -1).forEach((part) => {
+        const directoryPath = current.path ? `${current.path}/${part}` : part;
+        if (!current.directories.has(part)) {
+          current.directories.set(part, {
+            name: part,
+            path: directoryPath,
+            directories: new Map(),
+            files: [],
+          });
+        }
+        current = current.directories.get(part);
+      });
+      current.files.push({ name: parts.at(-1) || file.path, file, index });
+    });
+    return root;
+  }
+
+  function appendTreeChildren(parent, node, depth) {
+    const directories = [...node.directories.values()].sort((a, b) => a.name.localeCompare(b.name));
+    directories.forEach((directory) => {
+      const branch = el("div", "file-tree-branch");
+      const collapsed = state.collapsedFolders.has(directory.path);
+      const folder = button("", "file-tree-folder");
+      folder.setAttribute("role", "treeitem");
+      folder.style.paddingLeft = `${10 + depth * 14}px`;
+      folder.title = directory.path;
+      folder.setAttribute("aria-expanded", String(!collapsed));
+      folder.setAttribute("aria-label", `${collapsed ? "展开" : "收起"}目录 ${directory.path}`);
+      const chevron = el("span", "tree-chevron", collapsed ? "›" : "⌄");
+      chevron.setAttribute("aria-hidden", "true");
+      const icon = el("span", "tree-folder-icon", "");
+      icon.setAttribute("aria-hidden", "true");
+      folder.append(chevron, icon, el("span", "tree-folder-name", directory.name), el("span", "tree-count", countTreeFiles(directory)));
+      const children = el("div", "file-tree-children");
+      children.setAttribute("role", "group");
+      children.hidden = collapsed;
+      appendTreeChildren(children, directory, depth + 1);
+      folder.addEventListener("click", () => {
+        const willCollapse = !children.hidden;
+        children.hidden = willCollapse;
+        chevron.textContent = willCollapse ? "›" : "⌄";
+        folder.setAttribute("aria-expanded", String(!willCollapse));
+        folder.setAttribute("aria-label", `${willCollapse ? "展开" : "收起"}目录 ${directory.path}`);
+        if (willCollapse) state.collapsedFolders.add(directory.path);
+        else state.collapsedFolders.delete(directory.path);
+      });
+      branch.append(folder, children);
+      parent.append(branch);
+    });
+
+    [...node.files].sort((a, b) => a.name.localeCompare(b.name)).forEach(({ name, file, index }) => {
+      const link = button("", "file-rail-link");
+      link.style.paddingLeft = `${10 + depth * 14}px`;
+      link.title = file.path;
+      link.setAttribute("role", "treeitem");
+      link.setAttribute("aria-label", `跳转到 ${file.path}`);
+      link.addEventListener("click", () => {
+        document.querySelector(`#diff-file-${index}`)?.scrollIntoView({
+          behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+          block: "start",
+        });
+      });
+      const path = el("span", "file-rail-path", name);
+      path.title = file.path;
+      link.append(statusBadge(file.status), path);
+      parent.append(link);
+    });
+  }
+
+  function countTreeFiles(node) {
+    let count = node.files.length;
+    node.directories.forEach((child) => { count += countTreeFiles(child); });
+    return count;
   }
 
   function modeSwitch() {

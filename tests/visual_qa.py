@@ -242,8 +242,18 @@ async def main() -> None:
         await assert_viewport(desktop_page)
         await desktop_page.screenshot(path=ARTIFACTS / "diff-desktop.png", full_page=False)
 
+        source_folder = desktop_page.locator('.file-tree-folder[title="src"]')
+        assert await source_folder.get_attribute("aria-expanded") == "true"
+        await source_folder.click()
+        assert await source_folder.get_attribute("aria-expanded") == "false"
+        assert not await desktop_page.get_by_role("treeitem", name="跳转到 src/models/audit.py").is_visible()
+        await source_folder.click()
+        assert await source_folder.get_attribute("aria-expanded") == "true"
+
         detail_hash = await desktop_page.evaluate("location.hash")
-        await desktop_page.locator(".file-rail-link").nth(1).click()
+        audit_file = desktop_page.get_by_role("treeitem", name="跳转到 src/models/audit.py")
+        assert await audit_file.get_attribute("title") == "src/models/audit.py"
+        await audit_file.click()
         await desktop_page.wait_for_function("window.scrollY > 0")
         assert await desktop_page.evaluate("location.hash") == detail_hash
         assert await desktop_page.get_by_role("heading", name="提交记录").count() == 0
