@@ -34,6 +34,7 @@ flowchart LR
   T4 --> T5
   T3 --> T6[TASK-006 Integration and delivery]
   T5 --> T6
+  T6 --> T7[TASK-007 Windows executable]
 ```
 
 ## Tasks
@@ -260,9 +261,49 @@ Validate the assembled application and make it straightforward to install and ru
 
 - The current environment lacks SVN CLI, so real integration proof may be a documented skip unless a project-local executable becomes available.
 
+### TASK-007 Package and verify the Windows executable
+
+Status: approved
+Depends on: TASK-006
+
+#### Goal
+
+Produce a self-contained single-file Windows executable that embeds SVNLab's Python runtime and frontend assets while continuing to use the installed SVN CLI.
+
+#### Scope
+
+- Expected files or modules: `svnlab/__main__.py`, `pyproject.toml`, `svnlab.spec`, `scripts/build-exe.ps1`, `README.md`.
+- Add configurable host and port command-line options with loopback-safe defaults.
+- Define reproducible PyInstaller packaging for the application and static resources.
+- Build `dist/SVNLab.exe` and verify its health and static routes on a non-default port.
+
+#### Out of Scope
+
+- Bundling or redistributing SVN CLI binaries and DLLs.
+- Code signing, an installer, Windows service registration, or automatic firewall changes.
+
+#### Acceptance Criteria
+
+- [ ] `dist/SVNLab.exe` starts without a Python installation.
+- [ ] The packaged server accepts `--host` and `--port` while defaulting to `127.0.0.1:8000`.
+- [ ] `/api/health`, `/`, and `/assets/app.js` respond from the packaged process.
+- [ ] Build and intranet startup instructions document the SVN CLI and no-authentication security boundary.
+
+#### Verification
+
+- `uv run pytest`
+- `powershell -ExecutionPolicy Bypass -File scripts/build-exe.ps1`
+- Start `dist/SVNLab.exe --port 8765` and request the three acceptance routes.
+
+#### Risks and Review Focus
+
+- PyInstaller must include package data that Python imports do not discover automatically.
+- LAN binding exposes an unauthenticated service; it remains explicit opt-in and must be documented.
+
 ## Revision History
 
 - 2026-10-12: Initial plan derived from the approved design and empty repository baseline.
 - 2026-10-12: All tasks implemented and internally verified under the user's final-result-only review authorization.
 - 2026-10-12: Re-verified after SVN 1.14.2 installation. The real temporary-repository integration test and all 17 automated tests pass.
+- 2026-10-12: Added pre-approved TASK-007 for single-file Windows packaging based on `docs/superpowers/specs/2026-10-12-windows-exe-packaging-design.md`.
 
