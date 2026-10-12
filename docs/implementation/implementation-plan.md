@@ -263,5 +263,6 @@ Validate the assembled application and make it straightforward to install and ru
 ## Revision History
 
 - 2026-10-12: Initial plan derived from the approved design and empty repository baseline.
-- 2026-10-12: All tasks implemented and internally verified under the user's final-result-only review authorization. Integration review is ready; the real SVN repository test is skipped because this machine has no SVN CLI.
+- 2026-10-12: All tasks implemented and internally verified under the user's final-result-only review authorization.
+- 2026-10-12: Re-verified after SVN 1.14.2 installation. The real temporary-repository integration test and all 17 automated tests pass.
 
