@@ -4,5 +4,7 @@ __pycache__/
 .coverage
 htmlcov/
 .superpowers/
+artifacts/
+node_modules/
 *.pyc
 

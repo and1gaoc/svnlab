@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "svnlab"
+version = "0.1.0"
+description = "A small GitLab-inspired read-only browser for Subversion repositories"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115",
+  "pydantic>=2.10",
+  "uvicorn>=0.34",
+]
+
+[project.optional-dependencies]
+dev = [
+  "httpx>=0.28",
+  "playwright>=1.55",
+  "pytest>=8.3",
+  "pytest-asyncio>=0.25",
+  "ruff>=0.12",
+]
+
+[project.scripts]
+svnlab = "svnlab.__main__:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["svnlab"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
