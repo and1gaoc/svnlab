@@ -263,7 +263,7 @@ Validate the assembled application and make it straightforward to install and ru
 
 ### TASK-007 Package and verify the Windows executable
 
-Status: approved
+Status: awaiting_review
 Depends on: TASK-006
 
 #### Goal

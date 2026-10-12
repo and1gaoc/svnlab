@@ -7,4 +7,6 @@ htmlcov/
 artifacts/
 node_modules/
 *.pyc
+build/
+dist/
 

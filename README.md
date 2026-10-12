@@ -49,6 +49,38 @@ python -m venv .venv
 
 服务默认只监听本机回环地址。API 文档位于 <http://127.0.0.1:8000/api/docs>。
 
+## Windows EXE
+
+仓库中可以直接使用的单文件版本位于 `dist/SVNLab.exe`。该文件已经包含 Python、后端和前端资源，目标电脑无需另外安装 Python，但仍需安装 SVN CLI，并确保 `svn.exe` 可从 `PATH` 调用。
+
+仅供当前电脑使用：
+
+```powershell
+.\SVNLab.exe
+```
+
+启动后访问 <http://127.0.0.1:8000>。也可以修改端口：
+
+```powershell
+.\SVNLab.exe --port 9000
+```
+
+如果要让同一内网中的其他电脑访问，在可信内网服务器上运行：
+
+```powershell
+.\SVNLab.exe --host 0.0.0.0 --port 8000
+```
+
+其他电脑使用服务器 IP 访问，例如 `http://192.168.1.10:8000`。如无法连接，需要由管理员为所选端口配置 Windows 防火墙入站规则。SVNLab 当前没有登录鉴权，切勿暴露到公网或不可信网络。
+
+重新构建 EXE：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\build-exe.ps1
+```
+
+构建产物为 `dist/SVNLab.exe`。PyInstaller 必须在目标操作系统上运行，因此 Windows EXE 应在 Windows 环境中构建。
+
 ## 使用方式
 
 1. 打开 SVNLab，填写仓库地址、用户名和密码。
