@@ -35,6 +35,7 @@ flowchart LR
   T3 --> T6[TASK-006 Integration and delivery]
   T5 --> T6
   T6 --> T7[TASK-007 Windows executable]
+  T7 --> T8[TASK-008 Persistent cache and resilient browsing]
 ```
 
 ## Tasks
@@ -263,7 +264,7 @@ Validate the assembled application and make it straightforward to install and ru
 
 ### TASK-007 Package and verify the Windows executable
 
-Status: awaiting_review
+Status: approved
 Depends on: TASK-006
 
 #### Goal
@@ -300,10 +301,58 @@ Produce a self-contained single-file Windows executable that embeds SVNLab's Pyt
 - PyInstaller must include package data that Python imports do not discover automatically.
 - LAN binding exposes an unauthenticated service; it remains explicit opt-in and must be documented.
 
+### TASK-008 Add persistent caching and resilient commit browsing
+
+Status: ready
+Depends on: TASK-007
+
+#### Goal
+
+Avoid repeated SVN traffic for previously loaded data, show the first four SVN log lines in commit rows, and tolerate slow remote repositories with longer bounded timeouts.
+
+#### Scope
+
+- Expected files or modules: `svnlab/cache.py`, `svnlab/config.py`, `svnlab/models.py`, `svnlab/api.py`, `svnlab/app.py`, `svnlab/static/app.js`, `svnlab/static/styles.css`, focused tests, `README.md`, and regenerated `dist/SVNLab.exe`.
+- Persist commit pages, revision details, and full file contents in a local SQLite database keyed by repository and username scope without storing passwords.
+- Add an explicit latest-page remote refresh that overwrites only after a successful response.
+- Render up to four original SVN log lines in the commit list.
+- Increase bounded SVN command timeouts to the approved operation-specific values.
+- Rebuild and smoke-test the Windows executable.
+
+#### Out of Scope
+
+- Mirroring or checking out the SVN repository.
+- Background polling, automatic cache expiry, distributed cache synchronization, or caching authentication failures.
+- Storing SVN passwords in the cache.
+
+#### Acceptance Criteria
+
+- [ ] Repeated commit-page, revision-detail, and file-content requests survive process restart without another SVN data call.
+- [ ] Cache entries are isolated by repository and username, and contain no password.
+- [ ] Explicit latest-page refresh replaces cached data only after successful remote retrieval.
+- [ ] Commit rows render the first four log lines and preserve their line breaks.
+- [ ] Default info/log/content/diff timeouts are 60/180/300/600 seconds.
+- [ ] All tests and packaged-EXE health/static smoke checks pass.
+
+#### Verification
+
+- `uv run ruff check svnlab tests`
+- `uv run pytest`
+- `uv run python tests/visual_qa.py`
+- `powershell -ExecutionPolicy Bypass -File scripts/build-exe.ps1`
+- Start `dist/SVNLab.exe --port 8765` and request `/api/health`, `/`, and `/assets/app.js`.
+
+#### Risks and Review Focus
+
+- Cached repository content is sensitive local data even without credentials; keep it in the current user's local application-data directory.
+- Latest-page refresh must not delete the usable cached response before the remote request succeeds.
+- SQLite access must not block unrelated async request handling during filesystem I/O.
+
 ## Revision History
 
 - 2026-10-12: Initial plan derived from the approved design and empty repository baseline.
 - 2026-10-12: All tasks implemented and internally verified under the user's final-result-only review authorization.
 - 2026-10-12: Re-verified after SVN 1.14.2 installation. The real temporary-repository integration test and all 17 automated tests pass.
 - 2026-10-12: Added pre-approved TASK-007 for single-file Windows packaging based on `docs/superpowers/specs/2026-10-12-windows-exe-packaging-design.md`.
+- 2026-10-12: TASK-007 accepted through final delivery and remote push; added pre-approved TASK-008 from the persistent-cache design.
 
