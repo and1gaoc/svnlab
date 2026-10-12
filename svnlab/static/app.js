@@ -636,19 +636,50 @@
 
   function renderSplitDiff(file, fileIndex) {
     const container = el("div", "diff-split");
+    const grid = el("div", "diff-split-grid");
     const head = el("div", "split-head");
     head.append(el("span", null, `r${Math.max(0, state.detail.revision.revision - 1)} · 变更前`), el("span", null, `r${state.detail.revision.revision} · 变更后`));
-    container.append(head);
+    grid.append(head);
     let previous = null;
     file.hunks.forEach((hunk, hunkIndex) => {
       const gap = gapBefore(previous, hunk);
-      if (gap) container.append(renderContextGap(file, fileIndex, hunkIndex, gap, "split"));
-      container.append(el("div", "hunk-header", hunk.header));
-      buildSplitRows(hunk.lines).forEach(([oldLine, newLine]) => container.append(splitRow(oldLine, newLine)));
+      if (gap) grid.append(renderContextGap(file, fileIndex, hunkIndex, gap, "split"));
+      grid.append(el("div", "hunk-header", hunk.header));
+      buildSplitRows(hunk.lines).forEach(([oldLine, newLine]) => grid.append(splitRow(oldLine, newLine)));
       previous = hunk;
     });
-    if (previous) container.append(renderContextGap(file, fileIndex, file.hunks.length, gapAfter(previous), "split"));
+    if (previous) grid.append(renderContextGap(file, fileIndex, file.hunks.length, gapAfter(previous), "split"));
+    container.append(grid);
+    enableSplitScroll(container);
     return container;
+  }
+
+  function enableSplitScroll(container) {
+    const scrollbar = el("div", "split-scrollbar");
+    scrollbar.setAttribute("aria-label", "同步滚动左右差异");
+    scrollbar.tabIndex = 0;
+    const track = el("div", "split-scrollbar-track");
+    scrollbar.append(track);
+    container.append(scrollbar);
+
+    const synchronize = (left) => {
+      container.querySelectorAll(".split-cell .line-content").forEach((content) => {
+        if (Math.abs(content.scrollLeft - left) > 0.5) content.scrollLeft = left;
+      });
+    };
+    scrollbar.addEventListener("scroll", () => synchronize(scrollbar.scrollLeft));
+    container.addEventListener("wheel", (event) => {
+      if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
+      event.preventDefault();
+      scrollbar.scrollLeft += event.deltaX;
+    }, { passive: false });
+
+    requestAnimationFrame(() => {
+      const contents = [...container.querySelectorAll(".split-cell .line-content")];
+      const overflow = Math.max(0, ...contents.map((content) => content.scrollWidth - content.clientWidth));
+      scrollbar.hidden = overflow < 1;
+      track.style.width = `${scrollbar.clientWidth + overflow}px`;
+    });
   }
 
   function buildSplitRows(lines) {

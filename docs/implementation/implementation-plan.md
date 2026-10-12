@@ -36,6 +36,7 @@ flowchart LR
   T5 --> T6
   T6 --> T7[TASK-007 Windows executable]
   T7 --> T8[TASK-008 Persistent cache and resilient browsing]
+  T8 --> T9[TASK-009 Encoding and split-scroll correctness]
 ```
 
 ## Tasks
@@ -348,6 +349,50 @@ Avoid repeated SVN traffic for previously loaded data, show the first four SVN l
 - Latest-page refresh must not delete the usable cached response before the remote request succeeds.
 - SQLite access must not block unrelated async request handling during filesystem I/O.
 
+### TASK-009 Fix SVN text decoding and synchronized split scrolling
+
+Status: awaiting_review
+Depends on: TASK-008
+
+#### Goal
+
+Render Chinese and legacy-encoded SVN text correctly and keep both sides of a long split diff aligned under one horizontal scroll position.
+
+#### Scope
+
+- Expected files or modules: `svnlab/encoding.py`, `svnlab/svn_client.py`, `svnlab/parsers.py`, `svnlab/cache.py`, `svnlab/static/app.js`, `svnlab/static/styles.css`, focused tests, and regenerated `dist/SVNLab.exe`.
+- Parse SVN XML from bytes according to its declaration.
+- Add BOM-, UTF-8-, system-encoding-, and GB18030-aware text decoding for diffs, file contents, and diagnostics.
+- Invalidate old decoded cache entries through a cache-key namespace bump.
+- Render split diffs as a shared grid inside one horizontal scroll container.
+
+#### Out of Scope
+
+- Heuristic detection of every possible legacy character set.
+- Independent horizontal scrolling of old/new panes or soft-wrapping code lines.
+- Changes to SVN authentication, repository writes, or API shapes.
+
+#### Acceptance Criteria
+
+- [ ] UTF-8 XML and GB18030 Chinese diff/file content render without mojibake.
+- [ ] Previously cached decoded payloads are bypassed after the decoder change.
+- [ ] A long split-diff line cannot overlap the opposite pane.
+- [ ] One horizontal scrollbar moves both old and new panes by the same amount.
+- [ ] Full tests, browser QA, and packaged-EXE smoke checks pass.
+
+#### Verification
+
+- `uv run ruff check svnlab tests`
+- `uv run pytest`
+- `uv run --with playwright python tests/visual_qa.py`
+- `powershell -ExecutionPolicy Bypass -File scripts/build-exe.ps1`
+- Start `dist/SVNLab.exe --port 8765` and request `/api/health`, `/`, and `/assets/app.js`.
+
+#### Risks and Review Focus
+
+- SVN file contents are opaque bytes, so fallback order must not corrupt valid UTF-8.
+- Context rows and hunk headers must span the shared grid without changing expansion controls.
+
 ## Revision History
 
 - 2026-10-12: Initial plan derived from the approved design and empty repository baseline.
@@ -355,4 +400,5 @@ Avoid repeated SVN traffic for previously loaded data, show the first four SVN l
 - 2026-10-12: Re-verified after SVN 1.14.2 installation. The real temporary-repository integration test and all 17 automated tests pass.
 - 2026-10-12: Added pre-approved TASK-007 for single-file Windows packaging based on `docs/superpowers/specs/2026-10-12-windows-exe-packaging-design.md`.
 - 2026-10-12: TASK-007 accepted through final delivery and remote push; added pre-approved TASK-008 from the persistent-cache design.
+- 2026-10-12: TASK-008 accepted through source delivery and remote push; added pre-approved TASK-009 from the encoding and split-scroll design under the user's final-result-only review authorization.
 

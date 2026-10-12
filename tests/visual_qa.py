@@ -80,11 +80,40 @@ DETAIL = {
                     "new_start": 18,
                     "new_count": 4,
                     "lines": [
-                        {"kind": "context", "content": "def normalize(item):", "old_line": 18, "new_line": 18},
-                        {"kind": "deletion", "content": "    return mapper.apply(item)", "old_line": 19, "new_line": None},
-                        {"kind": "addition", "content": "    record = mapper.apply(item)", "old_line": None, "new_line": 19},
-                        {"kind": "addition", "content": "    return validate(record)", "old_line": None, "new_line": 20},
-                        {"kind": "context", "content": "", "old_line": 20, "new_line": 21},
+                        {
+                            "kind": "context",
+                            "content": "def normalize(item):",
+                            "old_line": 18,
+                            "new_line": 18,
+                        },
+                        {
+                            "kind": "deletion",
+                            "content": "    return mapper.apply(item, legacy_options="
+                            + "x" * 180
+                            + ")",
+                            "old_line": 19,
+                            "new_line": None,
+                        },
+                        {
+                            "kind": "addition",
+                            "content": "    record = mapper.apply(item, normalized_options="
+                            + "y" * 180
+                            + ")",
+                            "old_line": None,
+                            "new_line": 19,
+                        },
+                        {
+                            "kind": "addition",
+                            "content": "    return validate(record)",
+                            "old_line": None,
+                            "new_line": 20,
+                        },
+                        {
+                            "kind": "context",
+                            "content": "",
+                            "old_line": 20,
+                            "new_line": 21,
+                        },
                     ],
                 },
                 {
@@ -94,11 +123,36 @@ DETAIL = {
                     "new_start": 43,
                     "new_count": 4,
                     "lines": [
-                        {"kind": "context", "content": "record = normalize(item)", "old_line": 42, "new_line": 43},
-                        {"kind": "deletion", "content": "save(record)", "old_line": 43, "new_line": None},
-                        {"kind": "addition", "content": "if not exists(record.id):", "old_line": None, "new_line": 44},
-                        {"kind": "addition", "content": "    save(record)", "old_line": None, "new_line": 45},
-                        {"kind": "context", "content": "return record", "old_line": 44, "new_line": 46},
+                        {
+                            "kind": "context",
+                            "content": "record = normalize(item)",
+                            "old_line": 42,
+                            "new_line": 43,
+                        },
+                        {
+                            "kind": "deletion",
+                            "content": "save(record)",
+                            "old_line": 43,
+                            "new_line": None,
+                        },
+                        {
+                            "kind": "addition",
+                            "content": "if not exists(record.id):",
+                            "old_line": None,
+                            "new_line": 44,
+                        },
+                        {
+                            "kind": "addition",
+                            "content": "    save(record)",
+                            "old_line": None,
+                            "new_line": 45,
+                        },
+                        {
+                            "kind": "context",
+                            "content": "return record",
+                            "old_line": 44,
+                            "new_line": 46,
+                        },
                     ],
                 },
             ],
@@ -111,18 +165,35 @@ DETAIL = {
             "binary": False,
             "property_changes": [],
             "raw_fallback": [],
-            "hunks": [{
-                "header": "@@ -0,0 +1,3 @@",
-                "old_start": 0,
-                "old_count": 0,
-                "new_start": 1,
-                "new_count": 3,
-                "lines": [
-                    {"kind": "addition", "content": "class AuditEntry:", "old_line": None, "new_line": 1},
-                    {"kind": "addition", "content": "    revision: int", "old_line": None, "new_line": 2},
-                    {"kind": "addition", "content": "    actor: str", "old_line": None, "new_line": 3},
-                ],
-            }],
+            "hunks": [
+                {
+                    "header": "@@ -0,0 +1,3 @@",
+                    "old_start": 0,
+                    "old_count": 0,
+                    "new_start": 1,
+                    "new_count": 3,
+                    "lines": [
+                        {
+                            "kind": "addition",
+                            "content": "class AuditEntry:",
+                            "old_line": None,
+                            "new_line": 1,
+                        },
+                        {
+                            "kind": "addition",
+                            "content": "    revision: int",
+                            "old_line": None,
+                            "new_line": 2,
+                        },
+                        {
+                            "kind": "addition",
+                            "content": "    actor: str",
+                            "old_line": None,
+                            "new_line": 3,
+                        },
+                    ],
+                }
+            ],
         },
         {
             "path": "docs/legacy-sync.md",
@@ -132,17 +203,29 @@ DETAIL = {
             "binary": False,
             "property_changes": [],
             "raw_fallback": [],
-            "hunks": [{
-                "header": "@@ -1,2 +0,0 @@",
-                "old_start": 1,
-                "old_count": 2,
-                "new_start": 0,
-                "new_count": 0,
-                "lines": [
-                    {"kind": "deletion", "content": "# Legacy sync", "old_line": 1, "new_line": None},
-                    {"kind": "deletion", "content": "Deprecated workflow.", "old_line": 2, "new_line": None},
-                ],
-            }],
+            "hunks": [
+                {
+                    "header": "@@ -1,2 +0,0 @@",
+                    "old_start": 1,
+                    "old_count": 2,
+                    "new_start": 0,
+                    "new_count": 0,
+                    "lines": [
+                        {
+                            "kind": "deletion",
+                            "content": "# Legacy sync",
+                            "old_line": 1,
+                            "new_line": None,
+                        },
+                        {
+                            "kind": "deletion",
+                            "content": "Deprecated workflow.",
+                            "old_line": 2,
+                            "new_line": None,
+                        },
+                    ],
+                }
+            ],
         },
         {
             "path": "assets/warehouse-map.png",
@@ -161,7 +244,14 @@ DETAIL = {
 async def mock_api(route: Route) -> None:
     url = route.request.url
     if url.endswith("/api/repository/check"):
-        body = {"ok": True, "repository": {"revision": 1842, "kind": "dir", "url": CONNECTION["repository"]}}
+        body = {
+            "ok": True,
+            "repository": {
+                "revision": 1842,
+                "kind": "dir",
+                "url": CONNECTION["repository"],
+            },
+        }
     elif url.endswith("/api/commits"):
         body = COMMITS
     elif url.endswith("/api/commits/1842"):
@@ -185,7 +275,11 @@ async def mock_api(route: Route) -> None:
     else:
         await route.continue_()
         return
-    await route.fulfill(status=200, content_type="application/json", body=json.dumps(body, ensure_ascii=False))
+    await route.fulfill(
+        status=200,
+        content_type="application/json",
+        body=json.dumps(body, ensure_ascii=False),
+    )
 
 
 async def assert_viewport(page, *, allow_vertical: bool = True) -> None:
@@ -215,7 +309,9 @@ async def main() -> None:
 
     errors: list[str] = []
     async with async_playwright() as playwright:
-        browser = await playwright.chromium.launch(headless=True, executable_path=str(executable))
+        browser = await playwright.chromium.launch(
+            headless=True, executable_path=str(executable)
+        )
 
         desktop = await browser.new_context(viewport={"width": 1440, "height": 900})
         desktop_page = await desktop.new_page()
@@ -224,7 +320,9 @@ async def main() -> None:
         await desktop_page.goto(BASE_URL, wait_until="networkidle")
         await desktop_page.get_by_role("heading", name="连接你的 SVN 仓库").wait_for()
         await assert_viewport(desktop_page)
-        await desktop_page.screenshot(path=ARTIFACTS / "setup-desktop.png", full_page=True)
+        await desktop_page.screenshot(
+            path=ARTIFACTS / "setup-desktop.png", full_page=True
+        )
 
         await desktop_page.get_by_label("仓库地址").fill(CONNECTION["repository"])
         await desktop_page.get_by_label("用户名").fill(CONNECTION["username"])
@@ -240,26 +338,67 @@ async def main() -> None:
         await desktop_page.get_by_role("button", name="刷新远程").click()
         await desktop_page.get_by_text("已从 SVN 更新最新提交").wait_for()
         await assert_viewport(desktop_page)
-        await desktop_page.screenshot(path=ARTIFACTS / "commits-desktop.png", full_page=True)
+        await desktop_page.screenshot(
+            path=ARTIFACTS / "commits-desktop.png", full_page=True
+        )
 
         await desktop_page.locator(".commit-row").first.click()
         await desktop_page.locator(".diff-file").first.wait_for()
         assert await desktop_page.locator(".diff-file").count() == 4
         assert await desktop_page.get_by_text("二进制文件已变更").count() == 1
         assert await desktop_page.locator(".mode-switch .active").inner_text() == "并排"
+        split_scroll = desktop_page.locator(".diff-split").first
+        await desktop_page.wait_for_function(
+            "document.querySelector('.split-scrollbar')?.scrollWidth > document.querySelector('.split-scrollbar')?.clientWidth"
+        )
+        split_metrics = await split_scroll.evaluate(
+            """node => {
+              const oldCell = node.querySelector('.split-cell.deletion');
+              const newCell = node.querySelector('.split-cell.addition');
+              const oldContent = oldCell.querySelector('.line-content');
+              const newContent = newCell.querySelector('.line-content');
+              const scrollbar = node.querySelector('.split-scrollbar');
+              const beforeOld = oldCell.getBoundingClientRect();
+              const beforeNew = newCell.getBoundingClientRect();
+              scrollbar.scrollLeft = 180;
+              scrollbar.dispatchEvent(new Event('scroll'));
+              return {
+                overflow: scrollbar.scrollWidth > scrollbar.clientWidth,
+                separated: beforeOld.right <= beforeNew.left + 0.5,
+                oldScroll: oldContent.scrollLeft,
+                newScroll: newContent.scrollLeft,
+                scrollLeft: scrollbar.scrollLeft
+              };
+            }"""
+        )
+        assert split_metrics["overflow"], split_metrics
+        assert split_metrics["separated"], split_metrics
+        assert split_metrics["scrollLeft"] > 0, split_metrics
+        assert abs(split_metrics["oldScroll"] - split_metrics["newScroll"]) < 1, (
+            split_metrics
+        )
+        assert abs(split_metrics["oldScroll"] - split_metrics["scrollLeft"]) < 1, (
+            split_metrics
+        )
         await assert_viewport(desktop_page)
-        await desktop_page.screenshot(path=ARTIFACTS / "diff-desktop.png", full_page=False)
+        await desktop_page.screenshot(
+            path=ARTIFACTS / "diff-desktop.png", full_page=False
+        )
 
         source_folder = desktop_page.locator('.file-tree-folder[title="src"]')
         assert await source_folder.get_attribute("aria-expanded") == "true"
         await source_folder.click()
         assert await source_folder.get_attribute("aria-expanded") == "false"
-        assert not await desktop_page.get_by_role("treeitem", name="跳转到 src/models/audit.py").is_visible()
+        assert not await desktop_page.get_by_role(
+            "treeitem", name="跳转到 src/models/audit.py"
+        ).is_visible()
         await source_folder.click()
         assert await source_folder.get_attribute("aria-expanded") == "true"
 
         detail_hash = await desktop_page.evaluate("location.hash")
-        audit_file = desktop_page.get_by_role("treeitem", name="跳转到 src/models/audit.py")
+        audit_file = desktop_page.get_by_role(
+            "treeitem", name="跳转到 src/models/audit.py"
+        )
         assert await audit_file.get_attribute("title") == "src/models/audit.py"
         await audit_file.click()
         await desktop_page.wait_for_function("window.scrollY > 0")
@@ -279,7 +418,9 @@ async def main() -> None:
         await desktop_page.get_by_role("button", name="返回差异").first.click()
         await desktop_page.locator(".diff-split").first.wait_for()
 
-        mobile = await browser.new_context(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True)
+        mobile = await browser.new_context(
+            viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True
+        )
         seed = json.dumps(CONNECTION, ensure_ascii=False)
         await mobile.add_init_script(
             f"localStorage.setItem('svnlab.connection.v1', JSON.stringify({seed}));"
@@ -291,7 +432,9 @@ async def main() -> None:
         await mobile_page.locator(".diff-file").first.wait_for()
         assert await mobile_page.locator(".mode-switch .active").inner_text() == "单栏"
         await assert_viewport(mobile_page)
-        await mobile_page.screenshot(path=ARTIFACTS / "diff-mobile.png", full_page=False)
+        await mobile_page.screenshot(
+            path=ARTIFACTS / "diff-mobile.png", full_page=False
+        )
 
         await mobile.close()
         await desktop.close()
@@ -299,9 +442,10 @@ async def main() -> None:
 
     if errors:
         raise AssertionError(f"Browser page errors: {errors}")
-    print("Visual QA passed: setup, commits, complete diff, controls, source view, and mobile layout")
+    print(
+        "Visual QA passed: setup, commits, complete diff, controls, source view, and mobile layout"
+    )
 
 
 if __name__ == "__main__":
     asyncio.run(main())
-

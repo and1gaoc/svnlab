@@ -10,6 +10,8 @@ from collections.abc import Awaitable, Callable
 from pathlib import Path
 from typing import Any
 
+CACHE_FORMAT_VERSION = "v2-decoding"
+
 
 def default_cache_path() -> Path:
     if local_app_data := os.environ.get("LOCALAPPDATA"):
@@ -41,7 +43,9 @@ class RepositoryCache:
             f"{repository.rstrip('/')}\0{username}".encode()
         ).hexdigest()
         detail = "\0".join("" if item is None else str(item) for item in identity)
-        return hashlib.sha256(f"{scope}\0{kind}\0{detail}".encode()).hexdigest()
+        return hashlib.sha256(
+            f"{CACHE_FORMAT_VERSION}\0{scope}\0{kind}\0{detail}".encode()
+        ).hexdigest()
 
     async def get_or_load_json(
         self,
@@ -61,11 +65,15 @@ class RepositoryCache:
             value = json.loads(payload)
         except json.JSONDecodeError:
             await self.delete(key)
-            payload, cache_hit = await self.get_or_load_text(key, load_text, refresh=True)
+            payload, cache_hit = await self.get_or_load_text(
+                key, load_text, refresh=True
+            )
             value = json.loads(payload)
         if not isinstance(value, dict):
             await self.delete(key)
-            payload, cache_hit = await self.get_or_load_text(key, load_text, refresh=True)
+            payload, cache_hit = await self.get_or_load_text(
+                key, load_text, refresh=True
+            )
             value = json.loads(payload)
         return value, cache_hit
 

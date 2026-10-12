@@ -27,6 +27,19 @@ def test_parse_info_and_verbose_log() -> None:
     assert commits[0].changed_paths[1].copy_from_revision == 40
 
 
+def test_parse_utf8_xml_bytes_preserves_chinese_text() -> None:
+    commits = parse_log_xml(
+        """<?xml version="1.0" encoding="UTF-8"?><log><logentry revision="7">
+        <author>李伟</author><date>2026-10-12T08:30:00Z</date><paths>
+        <path action="M" kind="file">/主干/说明.txt</path></paths>
+        <msg>修复中文编码</msg></logentry></log>""".encode()
+    )
+
+    assert commits[0].author == "李伟"
+    assert commits[0].message == "修复中文编码"
+    assert commits[0].changed_paths[0].path == "/主干/说明.txt"
+
+
 def test_parse_multifile_text_binary_and_property_diff() -> None:
     payload = """Index: src/app.py
 ===================================================================
@@ -54,7 +67,11 @@ Modified: svn:eol-style
 +LF
 """
     files = parse_svn_diff(payload)
-    assert [item.path for item in files] == ["src/app.py", "assets/logo.png", "README.md"]
+    assert [item.path for item in files] == [
+        "src/app.py",
+        "assets/logo.png",
+        "README.md",
+    ]
     assert files[0].hunks[0].lines[1].kind == "deletion"
     assert files[0].hunks[0].lines[2].new_line == 2
     assert files[1].binary is True
@@ -80,4 +97,3 @@ Index: old.txt
     files = parse_svn_diff(payload)
     assert files[0].status == "added"
     assert files[1].status == "deleted"
-

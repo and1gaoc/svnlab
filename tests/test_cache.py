@@ -1,8 +1,21 @@
+import hashlib
 import sqlite3
 
 import pytest
 
-from svnlab.cache import RepositoryCache
+from svnlab.cache import CACHE_FORMAT_VERSION, RepositoryCache
+
+
+def test_cache_key_is_versioned_to_bypass_old_decoded_values() -> None:
+    repository = "https://svn.example/repo"
+    username = "ada"
+    scope = hashlib.sha256(f"{repository}\0{username}".encode()).hexdigest()
+    old_payload = f"{scope}\0file\0" + "7\0a.py"
+    old_key = hashlib.sha256(old_payload.encode()).hexdigest()
+    new_key = RepositoryCache.key(repository, username, "file", 7, "a.py")
+
+    assert CACHE_FORMAT_VERSION == "v2-decoding"
+    assert new_key != old_key
 
 
 @pytest.mark.asyncio

@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 from .models import HUNK_HEADER_RE, ChangedPath, Commit, DiffFile, DiffHunk, DiffLine
 
 
-def parse_info_xml(payload: str) -> dict[str, str | int | None]:
+def parse_info_xml(payload: str | bytes) -> dict[str, str | int | None]:
     root = ET.fromstring(payload)
     entry = root.find("entry")
     if entry is None:
@@ -15,12 +15,16 @@ def parse_info_xml(payload: str) -> dict[str, str | int | None]:
         "revision": int(entry.attrib.get("revision", "0")),
         "kind": entry.attrib.get("kind"),
         "url": _text(entry.find("url")),
-        "repository_root": _text(repository.find("root")) if repository is not None else "",
-        "repository_uuid": _text(repository.find("uuid")) if repository is not None else "",
+        "repository_root": _text(repository.find("root"))
+        if repository is not None
+        else "",
+        "repository_uuid": _text(repository.find("uuid"))
+        if repository is not None
+        else "",
     }
 
 
-def parse_log_xml(payload: str) -> list[Commit]:
+def parse_log_xml(payload: str | bytes) -> list[Commit]:
     root = ET.fromstring(payload)
     commits: list[Commit] = []
     for entry in root.findall("logentry"):
@@ -38,7 +42,9 @@ def parse_log_xml(payload: str) -> list[Commit]:
                         action=action,
                         kind=path_node.attrib.get("kind"),
                         copy_from_path=path_node.attrib.get("copyfrom-path"),
-                        copy_from_revision=int(copy_revision) if copy_revision else None,
+                        copy_from_revision=int(copy_revision)
+                        if copy_revision
+                        else None,
                     )
                 )
         commits.append(
@@ -99,7 +105,11 @@ def _parse_diff_section(path: str, lines: list[str]) -> DiffFile:
         if in_properties:
             property_changes.append(line)
             continue
-        if "Cannot display:" in line or "is a binary type" in line or "Binary files" in line:
+        if (
+            "Cannot display:" in line
+            or "is a binary type" in line
+            or "Binary files" in line
+        ):
             binary = True
             fallback.append(line)
             continue
@@ -183,4 +193,3 @@ def _parse_diff_section(path: str, lines: list[str]) -> DiffFile:
 
 def _text(node: ET.Element | None) -> str:
     return node.text if node is not None and node.text is not None else ""
-
